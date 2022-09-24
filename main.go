@@ -11,7 +11,7 @@ import (
 func main() {
 	ip := flag.String("ip", "", "Must specify ip")
 	portScan := flag.Bool("p", false, "Port Scan")
-	aliveHost := flag.Bool("h", false, "Is host Alive")
+	aliveHost := flag.Bool("a", false, "Is host Alive")
 	flag.Parse()
 
 	if len(*ip) == 0 {

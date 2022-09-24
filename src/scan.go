@@ -26,13 +26,7 @@ func isOpen(protocol string, host string, port int, timeout time.Duration) bool 
 }
 
 func IsHostAlive(ipAddress string) bool {
-	conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", ipAddress, 80), timeout)
-	if err == nil {
-		_ = conn.Close()
-		return true
-	}
-
-	return false
+	return isOpen(tcpProtocol, ipAddress, 80, timeout)
 }
 
 func PortScan(ipAddress string) {
