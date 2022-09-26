@@ -25,6 +25,29 @@ func isOpen(protocol string, host string, port int, timeout time.Duration) bool 
 	return false
 }
 
+func NetworkScan(ipAddress string) {
+	// init discoved ip
+	discoveredIPs := []string{}
+
+	//find the network's total Hosts
+	totalHosts := CalculateTotalHosts(ipAddress)
+
+	wg := &sync.WaitGroup{}
+	for i := 0; i < int(totalHosts); i++ {
+		ip := fmt.Sprintf()
+		wg.Add(1)
+		go func() {
+			opened := isOpen(tcpProtocol, ip, 80, timeout)
+			if opened {
+				discoveredIPs = append(discoveredIPs, ip)
+			}
+			wg.Done()
+		}(ip)
+
+	}
+
+}
+
 func IsHostAlive(ipAddress string) bool {
 	return isOpen(tcpProtocol, ipAddress, 80, timeout)
 }
@@ -47,8 +70,8 @@ func PortScan(ipAddress string) {
 	wg.Wait()
 
 	if len(ports) == 0 {
-		fmt.Printf("No Ports found open for this IP\n")
+		fmt.Printf("No open porst found\n")
 	} else {
-		fmt.Printf("Opened ports: %v\n", ports)
+		fmt.Printf("Open ports: %v\n", ports)
 	}
 }
