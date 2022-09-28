@@ -26,27 +26,29 @@ func isOpen(protocol string, host net.IP, port int, timeout time.Duration) bool 
 	return false
 }
 
-func NetworkScan(ipAddress string) {
+func NetworkScan(ipAddress string) []string {
 	// init discoved ip
 	discoveredIPs := []string{}
 
 	//find the network's total Hosts
 	startHost, finishHost := CalculateTotalHosts(ipAddress)
 
-	wg := &sync.WaitGroup{}
+	// wg := &sync.WaitGroup{}
 	for i := startHost; i < finishHost; i++ {
 
 		ip := ConvertIpFromBinary(i)
 
-		wg.Add(1)
-		go func() {
-			opened := isOpen(tcpProtocol, ip, 80, timeout)
-			if opened {
-				discoveredIPs = append(discoveredIPs, string(ip))
-			}
-			wg.Done()
-		}()
+		// wg.Add(1)
+		// go func() {
+		opened := isOpen(tcpProtocol, ip, 80, timeout)
+		if opened {
+			discoveredIPs = append(discoveredIPs, string(ip))
+		}
+		// 	wg.Done()
+		// }()
 	}
+
+	return discoveredIPs
 
 }
 

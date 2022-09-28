@@ -49,5 +49,31 @@ func TestConvertIpFromBinary(t *testing.T) {
 
 		fmt.Println(ip)
 	}
+}
+
+func TestHostAlive(t *testing.T) {
+
+	ipList := []string{
+		"10.10.20.24/24",
+		"10.10.20.1/32",
+		"10.10.20.1/24",
+	}
+
+	for _, ip := range ipList {
+		fmt.Printf("Host %s Found Alive %v \n", ip, IsHostAlive(ip))
+	}
+
+}
+
+func TestNetworkScan(t *testing.T) {
+
+	ipList := []string{
+		"10.10.20.1/24",
+		"10.10.99.1/32",
+	}
+
+	for _, ip := range ipList {
+		fmt.Printf("Host Found Alive %v \n", NetworkScan(ip))
+	}
 
 }
