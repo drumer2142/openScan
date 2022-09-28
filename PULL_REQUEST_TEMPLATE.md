@@ -2,20 +2,16 @@
 
 ## Description
 
-- Please include a summary of the change and which issue is fixed. 
-- Please also include relevant motivation and context. 
-- List any dependencies that are required for this change.
+- Please include a summary of the change
 - Important information and keynotes for the reviewer.
 
 Fixes (issue)
 
 ## Type of change
 
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] Maintenance (Port/Error Codes Mapping, Rewords, etc.)
-- [ ] Refactoring (Refactor/reformat non-breaking change which refactors/reformat code)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] New feature (Change which adds functionality)
+- [ ] Bug fix (Change which fixes an issue)
+- [ ] Refactoring (Refactor/reformat code)
 
 ## How Has This Been Tested?
 
@@ -23,8 +19,10 @@ Fixes (issue)
 - Provide instructions so we can reproduce. 
 - Please also list any relevant details for your test configuration.
 
-- [ ] Test A
-- [ ] Test B
+### TESTS
+```go
+
+```
 
 ## Checklist:
 
