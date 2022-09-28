@@ -2,6 +2,7 @@ package src
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"sync"
 	"time"
@@ -15,7 +16,7 @@ var (
 	timeout            = time.Microsecond * 200
 )
 
-func isOpen(protocol string, host string, port int, timeout time.Duration) bool {
+func isOpen(protocol string, host net.IP, port int, timeout time.Duration) bool {
 	conn, err := net.DialTimeout(protocol, fmt.Sprintf("%s:%d", host, port), timeout)
 	if err == nil {
 		_ = conn.Close()
@@ -30,36 +31,46 @@ func NetworkScan(ipAddress string) {
 	discoveredIPs := []string{}
 
 	//find the network's total Hosts
-	totalHosts := CalculateTotalHosts(ipAddress)
+	startHost, finishHost := CalculateTotalHosts(ipAddress)
 
 	wg := &sync.WaitGroup{}
-	for i := 0; i < int(totalHosts); i++ {
-		ip := fmt.Sprintf()
+	for i := startHost; i < finishHost; i++ {
+
+		ip := ConvertIpFromBinary(i)
+
 		wg.Add(1)
 		go func() {
 			opened := isOpen(tcpProtocol, ip, 80, timeout)
 			if opened {
-				discoveredIPs = append(discoveredIPs, ip)
+				discoveredIPs = append(discoveredIPs, string(ip))
 			}
 			wg.Done()
-		}(ip)
-
+		}()
 	}
 
 }
 
 func IsHostAlive(ipAddress string) bool {
-	return isOpen(tcpProtocol, ipAddress, 80, timeout)
+	ip, _, err := net.ParseCIDR(ipAddress)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return isOpen(tcpProtocol, ip, 80, timeout)
 }
 
 func PortScan(ipAddress string) {
 	ports := []int{}
 
+	ip, _, err := net.ParseCIDR(ipAddress)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	wg := &sync.WaitGroup{}
 	for port := minPort; port < maxPort; port++ {
 		wg.Add(1)
 		go func(port int) {
-			opened := isOpen(tcpProtocol, ipAddress, port, timeout)
+			opened := isOpen(tcpProtocol, ip, port, timeout)
 			if opened {
 				ports = append(ports, port)
 			}

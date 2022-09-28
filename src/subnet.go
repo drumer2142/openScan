@@ -1,12 +1,28 @@
 package src
 
 import (
+	"encoding/binary"
+	"log"
 	"net"
-
-	"github.com/apparentlymart/go-cidr/cidr"
 )
 
-func CalculateTotalHosts(ipAddress string) uint64 {
-	_, network, _ := net.ParseCIDR(ipAddress)
-	return cidr.AddressCount(network)
+func CalculateTotalHosts(ipAddress string) (uint32, uint32) {
+	_, network, err := net.ParseCIDR(ipAddress)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	mask := binary.BigEndian.Uint32(network.Mask)
+	start := binary.BigEndian.Uint32(network.IP)
+
+	finish := (start & mask) | (mask ^ 0xffffffff)
+
+	return start, finish
+}
+
+func ConvertIpFromBinary(i uint32) net.IP {
+	ip := make(net.IP, 4)
+	binary.BigEndian.PutUint32(ip, i)
+
+	return ip
 }
