@@ -2,21 +2,25 @@ package src
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"sync"
 	"time"
+
+	"github.com/drumer2142/openScan/helpers"
 )
 
 var (
-	// icmpProtocol string = "ip4:icmp"
 	tcpProtocol string = "tcp"
-	minPort     int    = 1
-	maxPort     int    = 1024
-	timeout            = time.Microsecond * 200
+	// icmpProtocol string = "ip4:icmp"
+	minPort int = 1
+	maxPort int = 1024
+	timeout     = time.Millisecond * 200
 )
 
-func isOpen(protocol string, host string, port int, timeout time.Duration) bool {
-	conn, err := net.DialTimeout(protocol, fmt.Sprintf("%s:%d", host, port), timeout)
+func isOpen(protocol string, host net.IP, port int, timeout time.Duration) bool {
+	address := helpers.FormatIPandPort(host, port)
+	conn, err := net.DialTimeout(protocol, address, timeout)
 	if err == nil {
 		_ = conn.Close()
 		return true
@@ -25,18 +29,49 @@ func isOpen(protocol string, host string, port int, timeout time.Duration) bool 
 	return false
 }
 
+func NetworkScan(ipAddress string) []string {
+	// init discoved ip
+	discoveredIPs := []string{}
+
+	//find the network's total Hosts
+	startHost, finishHost := CalculateTotalHosts(ipAddress)
+
+	// wg := &sync.WaitGroup{}
+	for i := startHost; i < finishHost; i++ {
+
+		ip := ConvertIpFromBinary(i)
+
+		echoCheck := isOpen(tcpProtocol, ip, 80, timeout)
+		if echoCheck {
+			discoveredIPs = append(discoveredIPs, helpers.FormatIP(ip))
+		}
+	}
+
+	return discoveredIPs
+
+}
+
 func IsHostAlive(ipAddress string) bool {
-	return isOpen(tcpProtocol, ipAddress, 80, timeout)
+	ip, _, err := net.ParseCIDR(ipAddress)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return isOpen(tcpProtocol, ip, 80, timeout)
 }
 
 func PortScan(ipAddress string) {
 	ports := []int{}
 
+	ip, _, err := net.ParseCIDR(ipAddress)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	wg := &sync.WaitGroup{}
 	for port := minPort; port < maxPort; port++ {
 		wg.Add(1)
 		go func(port int) {
-			opened := isOpen(tcpProtocol, ipAddress, port, timeout)
+			opened := isOpen(tcpProtocol, ip, port, timeout)
 			if opened {
 				ports = append(ports, port)
 			}
@@ -47,8 +82,8 @@ func PortScan(ipAddress string) {
 	wg.Wait()
 
 	if len(ports) == 0 {
-		fmt.Printf("No Ports found open for this IP\n")
+		fmt.Printf("No open ports found\n")
 	} else {
-		fmt.Printf("Opened ports: %v\n", ports)
+		fmt.Printf("Open ports: %v\n", ports)
 	}
 }
