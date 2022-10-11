@@ -82,7 +82,7 @@ func PortScan(ipAddress string) {
 	wg.Wait()
 
 	if len(ports) == 0 {
-		fmt.Printf("No open porst found\n")
+		fmt.Printf("No open ports found\n")
 	} else {
 		fmt.Printf("Open ports: %v\n", ports)
 	}

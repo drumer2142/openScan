@@ -87,13 +87,28 @@ func TestHostAlive(t *testing.T) {
 
 func TestNetworkScan(t *testing.T) {
 
-	ipList := []string{
-		"10.10.20.1/24",
-		"10.10.99.1/32",
+	type Case struct {
+		IP            string
+		DiscoveredIPs []string
 	}
 
-	for _, ip := range ipList {
-		fmt.Printf("Host Found Alive %v \n", NetworkScan(ip))
+	ipList := []Case{
+		{
+			IP: "10.10.70.1/24",
+			DiscoveredIPs: []string{
+				"10.10.70.1",
+			},
+		},
+	}
+
+	for _, discovery := range ipList {
+		networkDiscoveries := NetworkScan(discovery.IP)
+
+		if len(networkDiscoveries) != len(discovery.DiscoveredIPs) {
+			t.Errorf("Array length does not much")
+		}
+
+		fmt.Printf("Host Found Alive %v \n", networkDiscoveries)
 	}
 
 }
