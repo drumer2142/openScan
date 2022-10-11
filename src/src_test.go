@@ -53,14 +53,34 @@ func TestConvertIpFromBinary(t *testing.T) {
 
 func TestHostAlive(t *testing.T) {
 
-	ipList := []string{
-		"10.10.20.24/24",
-		"10.10.20.1/32",
-		"10.10.20.1/24",
+	type Case struct {
+		IP    string
+		Found bool
 	}
 
-	for _, ip := range ipList {
-		fmt.Printf("Host %s Found Alive %v \n", ip, IsHostAlive(ip))
+	ipList := []Case{
+		{
+			IP:    "10.10.20.24/24",
+			Found: false,
+		},
+		{
+			IP:    "10.10.20.1/32",
+			Found: true,
+		},
+		{
+			IP:    "10.10.99.1/24",
+			Found: true,
+		},
+	}
+
+	for _, host := range ipList {
+		hostStatus := IsHostAlive(host.IP)
+		if hostStatus == host.Found {
+			fmt.Printf("Host %s Found Alive %v \n", host.IP, IsHostAlive(host.IP))
+		} else {
+			t.Errorf("Host %s did not much the expected status. Expected %v but got %v", host.IP, host.Found, hostStatus)
+		}
+
 	}
 
 }
