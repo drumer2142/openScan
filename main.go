@@ -39,4 +39,5 @@ func main() {
 		fmt.Printf("Host Found Alive %v", src.NetworkScan(*ip))
 	}
 
+	os.Exit(0)
 }

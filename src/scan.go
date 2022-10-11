@@ -6,18 +6,21 @@ import (
 	"net"
 	"sync"
 	"time"
+
+	"github.com/drumer2142/openScan/helpers"
 )
 
 var (
-	// icmpProtocol string = "ip4:icmp"
 	tcpProtocol string = "tcp"
-	minPort     int    = 1
-	maxPort     int    = 1024
-	timeout            = time.Microsecond * 200
+	// icmpProtocol string = "ip4:icmp"
+	minPort int = 1
+	maxPort int = 1024
+	timeout     = time.Millisecond * 200
 )
 
 func isOpen(protocol string, host net.IP, port int, timeout time.Duration) bool {
-	conn, err := net.DialTimeout(protocol, fmt.Sprintf("%s:%d", host, port), timeout)
+	address := helpers.FormatIPandPort(host, port)
+	conn, err := net.DialTimeout(protocol, address, timeout)
 	if err == nil {
 		_ = conn.Close()
 		return true
@@ -38,14 +41,10 @@ func NetworkScan(ipAddress string) []string {
 
 		ip := ConvertIpFromBinary(i)
 
-		// wg.Add(1)
-		// go func() {
-		opened := isOpen(tcpProtocol, ip, 80, timeout)
-		if opened {
-			discoveredIPs = append(discoveredIPs, string(ip))
+		echoCheck := isOpen(tcpProtocol, ip, 80, timeout)
+		if echoCheck {
+			discoveredIPs = append(discoveredIPs, helpers.FormatIP(ip))
 		}
-		// 	wg.Done()
-		// }()
 	}
 
 	return discoveredIPs
