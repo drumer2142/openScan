@@ -12,7 +12,7 @@ openScan is a terminal based tool for scanning networks released under the MIT L
 - `-a`
 - `-sc`
 
-#### Examples
+# Examples
 
 **Port scan**
 ```bash
