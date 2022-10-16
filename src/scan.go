@@ -36,15 +36,20 @@ func NetworkScan(ipAddress string) []string {
 	//find the network's total Hosts
 	startHost, finishHost := CalculateTotalHosts(ipAddress)
 
-	// wg := &sync.WaitGroup{}
+	wg := &sync.WaitGroup{}
 	for i := startHost; i < finishHost; i++ {
+		wg.Add(1)
+		go func(i uint32) {
+			ip := ConvertIpFromBinary(i)
 
-		ip := ConvertIpFromBinary(i)
+			echoCheck := isOpen(tcpProtocol, ip, 80, timeout)
+			if echoCheck {
+				discoveredIPs = append(discoveredIPs, helpers.FormatIP(ip))
+			}
+			wg.Done()
+		}(i)
 
-		echoCheck := isOpen(tcpProtocol, ip, 80, timeout)
-		if echoCheck {
-			discoveredIPs = append(discoveredIPs, helpers.FormatIP(ip))
-		}
+		wg.Wait()
 	}
 
 	return discoveredIPs

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/fatih/color"
+
 	"github.com/drumer2142/openScan/src"
 )
 
@@ -35,8 +37,11 @@ func main() {
 	}
 
 	if *netScan {
-		fmt.Println("Scanning the subnet for possible host alive....")
-		fmt.Printf("Host Found Alive %v", src.NetworkScan(*ip))
+		color.Red("Scanning the subnet for possible host alive....It may take a while")
+		ipArray := src.NetworkScan(*ip)
+		for i := 0; i < len(ipArray); i++ {
+			fmt.Println("Host Found Alive", ipArray[i])
+		}
 	}
 
 	os.Exit(0)
