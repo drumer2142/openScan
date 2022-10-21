@@ -2,7 +2,7 @@
 
 ### Introduction
 
-openScan is a terminal based tool for scanning networks released under the MIT License. 
+openScan is a terminal based tool for network scanning released under the MIT License. 
 
 ### Usage
 
