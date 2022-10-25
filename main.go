@@ -16,6 +16,13 @@ var (
 )
 
 func main() {
+
+	initMenu()
+
+	os.Exit(0)
+}
+
+func initMenu() {
 	ip := flag.String("ip", "", "Must specify ip")
 	portScan := flag.Bool("p", false, "Port Scan")
 	aliveHost := flag.Bool("a", false, "Is host Alive")
@@ -27,13 +34,16 @@ func main() {
 	}
 
 	ipFormatted := CheckIPforMask(*ip)
+	callAppropriateMethod(ipFormatted, *portScan, *aliveHost, *netScan)
+}
 
-	if *portScan {
+func callAppropriateMethod(ipFormatted string, portScan bool, aliveHost bool, netScan bool) {
+	if portScan {
 		fmt.Printf("Scanning %s for open ports....", ipFormatted)
 		src.PortScan(ipFormatted)
 	}
 
-	if *aliveHost {
+	if aliveHost {
 		fmt.Printf("Scanning for host %s....", ipFormatted)
 		hostAlive := src.IsHostAlive(ipFormatted)
 		if hostAlive {
@@ -43,15 +53,13 @@ func main() {
 		fmt.Printf("Host %s is down\n", ipFormatted)
 	}
 
-	if *netScan {
+	if netScan {
 		color.Red("Scanning the subnet for possible host alive....It may take a while")
 		ipArray := src.NetworkScan(ipFormatted)
 		for i := 0; i < len(ipArray); i++ {
 			fmt.Println("Host Found Alive", ipArray[i])
 		}
 	}
-
-	os.Exit(0)
 }
 
 func CheckIPforMask(ip string) string {
